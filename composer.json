@@ -1,0 +1,30 @@
+{
+    "name": "gnahotelsolutions/laravel-paycomet",
+    "description": "Interact with Paycomet API using Laravel facades",
+    "keywords": [
+        "gnahotelsolutions",
+        "laravel-paycomet"
+    ],
+    "homepage": "https://github.com/gnahotelsolutions/laravel-paycomet",
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "David Llop",
+            "email": "dllop@gnahs.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.0",
+        "illuminate/support": "^8.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "GNAHotelSolutions\\LaravelPaycomet\\": "src"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    }
+}
