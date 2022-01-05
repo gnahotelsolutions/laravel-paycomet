@@ -9,6 +9,9 @@ class ApiRest
     const HEADER_NAME = 'PAYCOMET-API-TOKEN';
     const URL = 'https://rest.paycomet.com';
 
+    const PAYMENT_METHOD_CARD = 1;
+    const PAYMENT_METHOD_BIZUM = 11;
+
     public function __construct(
         protected string $token,
         protected string $version = 'v1'
@@ -22,7 +25,8 @@ class ApiRest
         string $pan,
         string $order,
         string $productDescription = '',
-    ): mixed
+        string $language = 'es'
+    ): object
     {
         return $this->executeRequest('cards', [
             'terminal' => $terminal,
@@ -32,17 +36,54 @@ class ApiRest
             'pan' => $pan,
             'order' => $order,
             'productDescription' => $productDescription,
-            'language' => 'ES',
-            'notify' => 1
+            'language' => $language,
         ]);
     }
 
-    protected function executeRequest($endpoint, $params): mixed
+    public function executePurchase(
+        int    $terminal,
+        string $order,
+        float  $amount,
+        string $currency,
+        string $ip,
+        ?string $userId,
+        ?string $userToken,
+        string $description,
+        string $urlOk,
+        string $urlKo,
+        string $email,
+        int $paymentMethod,
+    ): object
+    {
+        return $this->executeRequest('payments', [
+            'payment' => [
+                'terminal' => $terminal,
+                'order' => $order,
+                'amount' => $amount,
+                'currency' => $currency,
+                'methodId' => $paymentMethod,
+                'originalIp' => $ip,
+                'secure' => '1',
+                'idUser' => $userId,
+                'tokenUser' => $userToken,
+                'productDescription' => $description,
+                'merchantData' => [
+                    'customer' => [
+                        'email' => $email
+                    ]
+                ],
+                'urlOk' => $urlOk,
+                'urlKo' => $urlKo
+            ]
+        ]);
+    }
+
+    protected function executeRequest($endpoint, $params): object
     {
         return Http::asJson()
             ->withHeaders([self::HEADER_NAME => $this->token])
-            ->post($this->getUrl($endpoint), [$params])
-            ->json();
+            ->post($this->getUrl($endpoint), $params)
+            ->object();
     }
 
     protected function getUrl(string $endpoint): string
