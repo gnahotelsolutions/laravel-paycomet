@@ -43,7 +43,7 @@ class ApiRest
     public function executePurchase(
         int    $terminal,
         string $order,
-        float  $amount,
+        int  $amount,
         string $currency,
         string $ip,
         ?string $userId,
