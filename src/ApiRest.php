@@ -23,7 +23,7 @@ class ApiRest
         string $expirationYear,
         string $expirationMonth,
         string $pan,
-        string $order,
+        string $order = '',
         string $productDescription = '',
         string $language = 'es'
     ): object
