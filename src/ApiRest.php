@@ -14,11 +14,13 @@ class ApiRest
 
     public function __construct(
         protected string $token,
+        protected string $code,
+        protected string $terminal,
+        protected string $password,
         protected string $version = 'v1'
     ) {}
 
     public function addUser(
-        int    $terminal,
         string $cvv,
         string $expirationYear,
         string $expirationMonth,
@@ -29,7 +31,7 @@ class ApiRest
     ): object
     {
         return $this->executeRequest('cards', [
-            'terminal' => $terminal,
+            'terminal' => $this->terminal,
             'cvc2' => $cvv,
             'expiryYear' => $expirationYear,
             'expiryMonth' => $expirationMonth,
@@ -40,8 +42,16 @@ class ApiRest
         ]);
     }
 
+    public function infoUser(string $id, string $token): object
+    {
+        return $this->executeRequest('cards/info', [
+            'terminal' => $this->terminal,
+            'idUser' => $id,
+            'tokenUser' => $token,
+        ]);
+    }
+
     public function executePurchase(
-        int    $terminal,
         string $order,
         int  $amount,
         string $currency,
@@ -57,7 +67,7 @@ class ApiRest
     {
         return $this->executeRequest('payments', [
             'payment' => [
-                'terminal' => $terminal,
+                'terminal' => $this->terminal,
                 'order' => $order,
                 'amount' => $amount,
                 'currency' => $currency,
@@ -76,6 +86,45 @@ class ApiRest
                 'urlKo' => $urlKo
             ]
         ]);
+    }
+
+    public function executePurchaseUrl(
+        string $order,
+        int  $amount,
+        string $currency,
+        string $locale,
+        string $urlOk,
+        string $urlKo,
+    ): string
+    {
+        $params = [
+            'MERCHANT_MERCHANTCODE' => $this->code,
+            'MERCHANT_TERMINAL' => $this->terminal,
+            'OPERATION' => 1,
+            'LANGUAGE' => $locale, 'URLOK' => $urlOk,
+            'URLKO' => $urlKo,
+            'MERCHANT_ORDER' => $order,
+            '3DSECURE' => true,
+            'MERCHANT_AMOUNT' => $amount,
+            'MERCHANT_CURRENCY' => $currency,
+        ];
+
+        $params['MERCHANT_MERCHANTSIGNATURE'] = hash('sha512', implode('', [
+            $this->code,
+            $this->terminal,
+            1,
+            $order,
+            $amount,
+            $currency,
+            md5($this->password)
+        ]));
+
+        $params['VHASH'] = hash('sha512', implode('', [
+            md5(http_build_query($params)),
+            md5($this->password)
+        ]));
+
+        return 'https://api.paycomet.com/gateway/ifr-bankstore?' . http_build_query($params);
     }
 
     protected function executeRequest($endpoint, $params): object
