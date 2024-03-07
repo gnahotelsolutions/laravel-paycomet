@@ -83,8 +83,6 @@ class ApiRest
                         'email' => $email
                     ]
                 ],
-                'urlOk' => $urlOk,
-                'urlKo' => $urlKo
             ]
         ];
 
@@ -92,6 +90,10 @@ class ApiRest
             $params['payment']['secure'] = 0;
             $params['payment']['scaException'] = 'MIT';
             $params['payment']['trxType'] = 'C';
+            $params['payment']['userInteraction'] = 0;
+        } else {
+            $params['payment']['urlOk'] = $urlOk;
+            $params['payment']['urlKo'] = $urlKo;
         }
 
         return $this->executeRequest('payments', $params);
