@@ -63,9 +63,10 @@ class ApiRest
         string $urlKo,
         string $email,
         int $paymentMethod,
+        bool $insecure = false,
     ): object
     {
-        return $this->executeRequest('payments', [
+        $params = [
             'payment' => [
                 'terminal' => $this->terminal,
                 'order' => $order,
@@ -85,7 +86,15 @@ class ApiRest
                 'urlOk' => $urlOk,
                 'urlKo' => $urlKo
             ]
-        ]);
+        ];
+
+        if ($insecure) {
+            $params['payment']['secure'] = 0;
+            $params['payment']['scaException'] = 'MIT';
+            $params['payment']['trxType'] = 'C';
+        }
+
+        return $this->executeRequest('payments', $params);
     }
 
     public function executePurchaseUrl(
