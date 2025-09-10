@@ -76,6 +76,7 @@ class ApiRest
                 'originalIp' => $ip,
                 'secure' => '1',
                 'idUser' => $userId,
+                'trxType' => 'N',
                 'tokenUser' => $userToken,
                 'productDescription' => $description,
                 'merchantData' => [
@@ -89,9 +90,9 @@ class ApiRest
         if ($insecure) {
             $params['payment']['secure'] = 0;
             $params['payment']['scaException'] = 'MIT';
-            $params['payment']['trxType'] = 'C';
             $params['payment']['userInteraction'] = 0;
         } else {
+            $params['payment']['userInteraction'] = 1;
             $params['payment']['urlOk'] = $urlOk;
             $params['payment']['urlKo'] = $urlKo;
         }
