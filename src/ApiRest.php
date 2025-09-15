@@ -92,7 +92,7 @@ class ApiRest
             $params['payment']['scaException'] = 'MIT';
             $params['payment']['userInteraction'] = 0;
         } else {
-            $params['payment']['userInteraction'] = 1;
+            $params['payment']['userInteraction'] = "1";
             $params['payment']['urlOk'] = $urlOk;
             $params['payment']['urlKo'] = $urlKo;
         }
